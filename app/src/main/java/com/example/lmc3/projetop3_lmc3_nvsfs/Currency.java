@@ -9,12 +9,14 @@ public class Currency {
     public double quantity;
     public String destination;
     public String local;
+    public double result;
 
 
-    public Currency(double quantity, String local, String destination){
+    public Currency(double quantity, String local, String destination, double result){
         this.quantity = quantity;
         this.local = local;
         this.destination = destination;
+        this.result = result;
     }
     public String getLocal(){
         return local;
@@ -24,5 +26,8 @@ public class Currency {
     }
     public double getQuantity(){
         return quantity;
+    }
+    public double getResult(){
+        return quantity * result;
     }
 }
