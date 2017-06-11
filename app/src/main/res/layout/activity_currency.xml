@@ -95,7 +95,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/navBot"
             android:layout_gravity="bottom"
-            design:menu="@menu/menu_nav" />
+            design:menu="@menu/menu_nav"
+            android:background="@android:color/white"/>
     </RelativeLayout>
 
 </RelativeLayout>
