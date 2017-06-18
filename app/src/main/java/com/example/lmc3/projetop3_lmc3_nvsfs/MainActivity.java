@@ -3,6 +3,7 @@ package com.example.lmc3.projetop3_lmc3_nvsfs;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -71,6 +72,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return true;
             }
         });
+
+
+        PhoneUnlockedReceiver receiver = new PhoneUnlockedReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(receiver, filter);
     }
 
 
