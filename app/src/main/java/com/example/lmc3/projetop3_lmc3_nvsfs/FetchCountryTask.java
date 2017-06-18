@@ -18,34 +18,31 @@ import java.net.URL;
  * Created by lmc3 on 03/06/2017.
  */
 
-public class FetchFixerTask extends AsyncTask<String, Void, Currency> {
+public class FetchCountryTask extends AsyncTask<String, Void, String> {
     @Override
-    protected Currency doInBackground(String... params) {
+    protected String doInBackground(String... params) {
         String json = "";
-        String to = "";
-        String quantityString = "";
+        String from = "";
         try {
-            String from = params[0];
-            to = params[1];
-            quantityString = params[2];
-            json = getCurrencyResultFromTo(from, to);
+            from = params[0];
+            json = getCurrencyCoinResultFromContry(from);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            return getResultFromFixerJson(json, to, quantityString);
+            return getCurrencyCoinFromJson(json);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return "";
     }
 
-    private String getCurrencyResultFromTo(String from, String to) throws IOException {
-        String fixerJsonString = null;
-        if (!from.isEmpty() && !to.isEmpty()) {
+    private String getCurrencyCoinResultFromContry(String from) throws IOException {
+        String restcontriesJsonString = null;
+        if (!from.isEmpty()) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-            String feed = "http://api.fixer.io/latest?base=" + from + "&symbols=" + to;
+            String feed = "https://restcountries.eu/rest/v2/alpha/" + from;
 
             try {
                 //obter dados da moeda
@@ -63,31 +60,21 @@ public class FetchFixerTask extends AsyncTask<String, Void, Currency> {
                 while ((line = reader.readLine()) != null){
                     buffer.append(line + "\n");
                 }
-                fixerJsonString = buffer.toString();
+                restcontriesJsonString = buffer.toString();
 
             }catch (IOException e) {
                 return null;
             }
         }
-        return fixerJsonString;
+        return restcontriesJsonString;
     }
 
-    private Currency getResultFromFixerJson(String json, String to,String quantity) throws JSONException {
-        final String JSON_RATES = "rates";
-        final String JSON_BASE = "base";
-        final String JSON_DATE = "date";
-        final String JSON_DESTINATION = to;
-
+    private String getCurrencyCoinFromJson(String json) throws JSONException {
+        final String JSON_CURRENCIES = "currencies";
+        final String JSON_CODE = "code";
         JSONObject jsonObject = new JSONObject(json);
-        JSONObject rates = jsonObject.getJSONObject(JSON_RATES);
-
-        String base = jsonObject.getString(JSON_BASE);
-        double result = rates.getDouble(to);
-        double quantityDouble = 0;
-        if(quantity != null || quantity != ""){
-            quantityDouble = Double.parseDouble(quantity);
-        }
-        return new Currency(quantityDouble,base,to, result);
-
+        JSONArray jsonArray = jsonObject.getJSONArray(JSON_CURRENCIES);
+        String currencyCoin = jsonArray.getJSONObject(0).getString(JSON_CODE);
+        return currencyCoin;
     }
 }

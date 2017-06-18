@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -28,26 +29,21 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener {
 
-
     private GoogleMap map;
     LocationManager locationManager;
 
     public Double latitude;
     public Double longitude;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         //Map
+        //MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapa);
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapa);
-        mapFragment.getMapAsync(this);
-
-
+        SupportMapFragment mapa = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa);
+        mapa.getMapAsync(this);
         //Navbar
         BottomNavigationView navBar = (BottomNavigationView) findViewById(R.id.navBot);
         Menu menu = navBar.getMenu();
@@ -87,8 +83,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
 
         map = googleMap;
-
-
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                                              // Passing Location (lat and long) to the other activity)
@@ -109,12 +103,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         map.setOnMapLongClickListener(this);
 
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         map.setMyLocationEnabled(true);
-
-
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
 
@@ -126,22 +119,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     new LatLng(location.getLatitude(), location.getLongitude()),13));
 
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
-            }
+        }
     }
 
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-
-
         Double l1 = latLng.latitude;
         Double l2 = latLng.longitude;
 
         latitude = latLng.latitude;
         longitude = latLng.longitude;
-
-
         map.addMarker(new MarkerOptions().position(new LatLng(l1, l2)).title("teste"));
-
     }
 }
