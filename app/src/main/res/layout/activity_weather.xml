@@ -8,8 +8,47 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="WEATHER ACTIVITY"
-        />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Cidade"
+        android:id="@+id/city_name"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentTop="true" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Atual"
+        android:id="@+id/temp_atual"
+        android:textSize="50dp"
+        android:layout_below="@+id/city_name"
+        android:layout_toEndOf="@+id/city_name"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/temp_max"
+        android:text="Max"
+        android:layout_alignBottom="@+id/temp_atual"
+        android:layout_alignStart="@+id/temp_min" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Min"
+        android:id="@+id/temp_min"
+        android:layout_gravity="right|top"
+        android:layout_alignTop="@+id/temp_atual"
+        android:layout_toEndOf="@+id/temp_atual"
+        android:layout_marginStart="12dp" />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
