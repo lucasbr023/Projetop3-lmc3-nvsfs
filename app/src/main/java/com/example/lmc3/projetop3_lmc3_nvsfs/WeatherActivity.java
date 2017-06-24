@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -25,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 /**
  * Created by lmc3 on 03/06/2017.
@@ -52,6 +52,8 @@ public class WeatherActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+
+
 
         BottomNavigationView navBar = (BottomNavigationView) findViewById(R.id.navBot);
         Menu menu = navBar.getMenu();
@@ -83,6 +85,10 @@ public class WeatherActivity extends AppCompatActivity {
 
         latitude  = intent.getDoubleExtra("latitude", 0);
         longitude = intent.getDoubleExtra("longitude",0);
+
+        Log.d("NAT", latitude.toString());
+        Log.d("NAT", longitude.toString());
+
 
         HighAndLowTask task = new HighAndLowTask();
         task.execute(latitude.toString(),longitude.toString());
@@ -139,9 +145,14 @@ public class WeatherActivity extends AppCompatActivity {
                 temperaturaMin = jArr.getDouble(JSONTEMPMIN);
                 temperaturaMax = jArr.getDouble(JSONTEMPMAX);
 
+
                 temperaturaMax = round(formatKelvinToCelsius(temperaturaMax));
-                temperaturaMin = round(formatKelvinToCelsius(temperaturaMin));
-                temperatura = round(formatKelvinToCelsius(temperatura));
+
+
+               temperaturaMin = round(formatKelvinToCelsius(temperaturaMin));
+               temperatura = round(formatKelvinToCelsius(temperatura));
+
+
 
                 locationResult[0] = new Location(
                         idCity,
@@ -236,8 +247,16 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
     public static double round(double value) {
-        DecimalFormat df = new DecimalFormat("#.##");
-        return Double.valueOf(df.format(value));
+
+        if(Locale.getDefault() == Locale.ENGLISH) {
+            DecimalFormat df = new DecimalFormat("#.##");
+            return Double.valueOf(df.format(value));
+
+        } else {
+
+            DecimalFormat df = new DecimalFormat("#,##");
+            return Double.valueOf(df.format(value));
+
+        }
     }
 }
-

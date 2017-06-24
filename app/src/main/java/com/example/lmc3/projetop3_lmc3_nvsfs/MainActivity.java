@@ -13,19 +13,20 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.lmc3.projetop3_lmc3_nvsfs.models.Place;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener {
@@ -33,6 +34,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     LocationManager locationManager;
 
+    private PlacesHelper placesHelper;
+    SupportMapFragment mapa;
+
+
+    public Double name;
     public Double latitude;
     public Double longitude;
 
@@ -40,10 +46,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        placesHelper = new PlacesHelper(this);
+
+
+
+
         //Map
         //MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapa);
 
-        SupportMapFragment mapa = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa);
+        mapa = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa);
         mapa.getMapAsync(this);
         //Navbar
         BottomNavigationView navBar = (BottomNavigationView) findViewById(R.id.navBot);
@@ -91,6 +103,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
 
         map = googleMap;
+
+        List<Place> listPlaces =  placesHelper.obter();
+
+        for (int i = 0; i< listPlaces.size(); i++){
+
+            map.addMarker(new MarkerOptions().position(new LatLng(listPlaces.get(i).getLatitude(), listPlaces.get(i).getLongitude())).title("teste"));
+        }
+
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                                              // Passing Location (lat and long) to the other activity)
@@ -110,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         );
 
         map.setOnMapLongClickListener(this);
+
+
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -138,6 +160,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         latitude = latLng.latitude;
         longitude = latLng.longitude;
+
+        PlacesHelper placesHelper = new PlacesHelper(getApplicationContext());
+        placesHelper.incluir(latitude, longitude);
+
         map.addMarker(new MarkerOptions().position(new LatLng(l1, l2)).title("teste"));
+
     }
 }
