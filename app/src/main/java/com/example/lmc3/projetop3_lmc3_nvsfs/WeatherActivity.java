@@ -1,6 +1,8 @@
 package com.example.lmc3.projetop3_lmc3_nvsfs;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +15,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -27,6 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.concurrent.ExecutionException;
+
+import static com.example.lmc3.projetop3_lmc3_nvsfs.R.layout.activity_weather;
 
 /**
  * Created by lmc3 on 03/06/2017.
@@ -44,8 +50,11 @@ public class WeatherActivity extends AppCompatActivity {
     final String JSONTEMPMAX = "max";
     final String JSONTEMPMIN = "min";
     final String JSONCOUNTRY = "country";
+    final String JSONWEATHER = "weather";
+    final String JSONMAIN = "main";
 
     String nameCity;
+    String weather;
     Double temperatura = 0.0;
     Double temperaturaMax = 0.0;
     Double temperaturaMin = 0.0;
@@ -59,6 +68,8 @@ public class WeatherActivity extends AppCompatActivity {
     TextView textMaxTemperature;
     TextView valorMoeda;
     TextView local;
+    TextView tWeather;
+    ImageView imageView;
 
     Double latitude = 0.0;
     Double longitude = 0.0;
@@ -66,8 +77,7 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weather);
-
+        setContentView(activity_weather);
         BottomNavigationView navBar = (BottomNavigationView) findViewById(R.id.navBot);
         Menu menu = navBar.getMenu();
         MenuItem menuItem = menu.getItem(2);
@@ -119,6 +129,8 @@ public class WeatherActivity extends AppCompatActivity {
         textMaxTemperature = (TextView) findViewById(R.id.temp_max);
         textMinTemperature = (TextView) findViewById(R.id.temp_min);
         valorMoeda = (TextView) findViewById(R.id. actual_currency);
+        tWeather = (TextView) findViewById(R.id. weather);
+        imageView = (ImageView) findViewById(R.id.imageView);
 
     }
 
@@ -148,6 +160,9 @@ public class WeatherActivity extends AppCompatActivity {
                 temperaturaMin = round(formatKelvinToCelsius(temperaturaMin));
                 temperatura = round(formatKelvinToCelsius(temperatura));
 
+                JSONArray jweather = dayForecast.getJSONArray(JSONWEATHER);
+                weather = jweather.getJSONObject(0).getString(JSONMAIN);
+
                 locationResult[0] = new Location(
                         idCity,
                         longitude.toString(),
@@ -156,7 +171,7 @@ public class WeatherActivity extends AppCompatActivity {
                         temperatura,
                         temperaturaMin,
                         temperaturaMax,
-                        "");
+                        weather);
             }
 
             return locationResult;
@@ -222,6 +237,15 @@ public class WeatherActivity extends AppCompatActivity {
                     textTemperature.setText(result[i].temperature.toString());
                     textMaxTemperature.setText(result[i].maxTemperature.toString());
                     textMinTemperature.setText(result[i].minTemperature.toString());
+                    tWeather.setText(result[i].weather);
+                    switch (result[i].weather){
+                        case "Clear":
+                            imageView.setImageResource(R.drawable.ic_sunny);
+                            break;
+                        default:
+                            imageView.setImageResource(R.drawable.cloud);
+                            break;
+                    }
                 }
             }
         }
