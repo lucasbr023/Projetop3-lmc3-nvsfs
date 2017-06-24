@@ -104,7 +104,7 @@ public class CurrencyActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 FetchFixerTask task = new FetchFixerTask();
-                FetchCountryTask countryTask = new FetchCountryTask();
+
                 String local = spinnerLocal.getSelectedItem().toString();
                 String destination = spinnerDestination.getSelectedItem().toString();
                 String quantityString = quantity.getText().toString();

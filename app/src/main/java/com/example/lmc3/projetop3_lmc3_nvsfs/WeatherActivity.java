@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -25,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by lmc3 on 03/06/2017.
@@ -33,17 +35,30 @@ import java.text.DecimalFormat;
 public class WeatherActivity extends AppCompatActivity {
     StringBuilder urlHighAndLow;
 
+
+    final String JSONLIST = "list";
+    final String JSONCITY = "city";
+    final String JSONNAME = "name";
+    final String JSONTEMP = "temp";
+    final String JSONDAY = "day";
+    final String JSONTEMPMAX = "max";
+    final String JSONTEMPMIN = "min";
+    final String JSONCOUNTRY = "country";
+
     String nameCity;
     Double temperatura = 0.0;
     Double temperaturaMax = 0.0;
     Double temperaturaMin = 0.0;
-    String description;
+    String country;
+    String kindOfMoney;
     String idCity;
     final int NUMDAYS = 1;
 
     TextView textTemperature;
     TextView textMinTemperature;
     TextView textMaxTemperature;
+    TextView valorMoeda;
+    TextView local;
 
     Double latitude = 0.0;
     Double longitude = 0.0;
@@ -87,66 +102,56 @@ public class WeatherActivity extends AppCompatActivity {
         HighAndLowTask task = new HighAndLowTask();
         task.execute(latitude.toString(),longitude.toString());
 
-        ((TextView) findViewById(R.id.city_name)).setText(nameCity);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                getKindOfMoneyByLocation();
+            }
+        }, 1000);
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                getCurrencyByKindOfMoney();
+            }
+        }, 1000);
 
+        local = (TextView) findViewById(R.id.city_name);
         textTemperature = (TextView) findViewById(R.id.temp_atual);
-        textTemperature.setText(temperaturaMax.toString());
         textMaxTemperature = (TextView) findViewById(R.id.temp_max);
         textMinTemperature = (TextView) findViewById(R.id.temp_min);
+        valorMoeda = (TextView) findViewById(R.id. actual_currency);
 
-        ((TextView) findViewById(R.id.temp_max)).setText(temperaturaMax.toString());
-        ((TextView) findViewById(R.id.temp_min)).setText(temperaturaMin.toString());
     }
+
     public class HighAndLowTask extends AsyncTask<String, Void, Location[]> {
-
-
         private final String LOG_TAG = HighAndLowTask.class.getSimpleName();
-
         private double formatKelvinToCelsius(double temperatura) {
             double tempToCelsius = (Math.round(temperatura) - 273.15);
-
             return tempToCelsius;
         }
 
         private Location[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
                 throws JSONException {
 
-            final String JSONLIST = "list";
-//            final String JSONMAIN = "main";
-            final String JSONCITY = "city";
-            final String JSONNAME = "name";
-            final String JSONTEMP = "temp";
-            final String JSONDAY = "day";
-            final String JSONTEMPMAX = "max";
-            final String JSONTEMPMIN = "min";
-
-
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONObject jCity = forecastJson.getJSONObject(JSONCITY);
             nameCity = jCity.getString(JSONNAME);
+            country = jCity.getString(JSONCOUNTRY);
             JSONArray weatherArray = forecastJson.getJSONArray(JSONLIST);
-
             Location[] locationResult = new Location[numDays];
-
             for (int i = 0; i < weatherArray.length(); i++) {
-
-
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
-
                 JSONObject jArr = dayForecast.getJSONObject(JSONTEMP);
-
                 temperatura = jArr.getDouble(JSONDAY);
                 temperaturaMin = jArr.getDouble(JSONTEMPMIN);
                 temperaturaMax = jArr.getDouble(JSONTEMPMAX);
-
                 temperaturaMax = round(formatKelvinToCelsius(temperaturaMax));
                 temperaturaMin = round(formatKelvinToCelsius(temperaturaMin));
                 temperatura = round(formatKelvinToCelsius(temperatura));
 
                 locationResult[0] = new Location(
                         idCity,
-                        "",
-                        "",
+                        longitude.toString(),
+                        latitude.toString(),
                         nameCity,
                         temperatura,
                         temperaturaMin,
@@ -162,41 +167,30 @@ public class WeatherActivity extends AppCompatActivity {
         protected Location[] doInBackground(String... params) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-
             String forecastJsonStr = null;
-
             try {
                 urlHighAndLow = new StringBuilder();
-
                 urlHighAndLow.append("http://api.openweathermap.org/data/2.5/forecast/daily?lat=");
                 urlHighAndLow.append(params[0]);
                 urlHighAndLow.append("&lon=");
                 urlHighAndLow.append(params[1]);
                 urlHighAndLow.append("&cnt=1&APPID=d5e5e7bf0036493556227d17d41219bd");
-
                 Uri builtUri = Uri.parse(urlHighAndLow.toString());
-
                 URL url = new URL(builtUri.toString());
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 reader = new BufferedReader(new InputStreamReader(inputStream));
-
                 String line;
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line + "\n");
                 }
-
                 forecastJsonStr = buffer.toString();
-
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-
                 return null;
-
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -224,20 +218,44 @@ public class WeatherActivity extends AppCompatActivity {
             super.onPostExecute(result);
             if (result != null) {
                 for (int i = 0; i < result.length; i++) {
-                    ((TextView) findViewById(R.id.city_name)).setText(result[i].city);
-                    textTemperature.setText(temperaturaMax.toString());
-                    textMaxTemperature = (TextView) findViewById(R.id.temp_max);
-                    textMinTemperature = (TextView) findViewById(R.id.temp_min);
-
-                    ((TextView) findViewById(R.id.temp_max)).setText(temperaturaMax.toString());
-                    ((TextView) findViewById(R.id.temp_min)).setText(temperaturaMin.toString());
+                    local.setText(result[i].city);
+                    textTemperature.setText(result[i].temperature.toString());
+                    textMaxTemperature.setText(result[i].maxTemperature.toString());
+                    textMinTemperature.setText(result[i].minTemperature.toString());
                 }
             }
         }
+
+
     }
     public static double round(double value) {
-        DecimalFormat df = new DecimalFormat("#.##");
+        DecimalFormat df = new DecimalFormat("#.#");
         return Double.valueOf(df.format(value));
+    }
+
+    private void getKindOfMoneyByLocation() {
+        FetchCountryTask countryTask = new FetchCountryTask();
+        try {
+            String moeda = countryTask.execute(country).get();
+            kindOfMoney = moeda;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getCurrencyByKindOfMoney() {
+        FetchMoneyTask moneyTask = new FetchMoneyTask();
+        String value = "";
+        try {
+            value = moneyTask.execute(kindOfMoney).get();
+            valorMoeda.setText(value);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }
 

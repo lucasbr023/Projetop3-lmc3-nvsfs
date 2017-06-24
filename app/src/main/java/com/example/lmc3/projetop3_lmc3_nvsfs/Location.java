@@ -12,9 +12,9 @@ public class Location implements Serializable {
     public Double temperature;
     public Double minTemperature;
     public Double maxTemperature;
-    public String description;
+    public String moedalocal;
 
-    public Location(String id, String longitude, String latitude, String city, Double temperature, Double minTemperature, Double maxTemperature, String description) {
+    public Location(String id, String longitude, String latitude, String city, Double temperature, Double minTemperature, Double maxTemperature, String moedalocal) {
         this.id = id;
         this.city = city;
         this.longitude = longitude;
@@ -22,6 +22,6 @@ public class Location implements Serializable {
         this.temperature = temperature;
         this.minTemperature = minTemperature;
         this.maxTemperature = maxTemperature;
-        this.description = description;
+        this.moedalocal = moedalocal;
     }
 }

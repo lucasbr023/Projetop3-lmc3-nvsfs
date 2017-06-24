@@ -3,7 +3,6 @@ package com.example.lmc3.projetop3_lmc3_nvsfs;
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,36 +12,38 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.ExecutionException;
+import java.text.DecimalFormat;
 
 /**
  * Created by lmc3 on 03/06/2017.
  */
 
-public class FetchCountryTask extends AsyncTask<String, Void, String> {
-    String json = "";
-    String currentCoin = "";
+public class FetchMoneyTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
-        String from = "";
+        String json = "";
+        String to = "";
+        String quantityString = "";
         try {
-            from = params[0];
-            json = getCurrencyCoinResultFromContry(from);
-            currentCoin = getCurrencyCoinFromJson(json);
+            to = params[0];
+            json = getCurrencyResultFromTo(to);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        try {
+            return getResultFromFixerJson(json, to);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return currentCoin;
+        return to.equals("BRL") ? "100" : "Valor não encontrado :(";
     }
 
-    private String getCurrencyCoinResultFromContry(String from) throws IOException {
-        String restcontriesJsonString = null;
-        if (!from.isEmpty()) {
+    private String getCurrencyResultFromTo(String to) throws IOException {
+        String fixerJsonString = null;
+        if (!to.isEmpty()) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-            String feed = "https://restcountries.eu/rest/v2/alpha/" + from;
+            String feed = "http://api.fixer.io/latest?base=BRL&symbols=" + to;
 
             try {
                 //obter dados da moeda
@@ -60,31 +61,33 @@ public class FetchCountryTask extends AsyncTask<String, Void, String> {
                 while ((line = reader.readLine()) != null){
                     buffer.append(line + "\n");
                 }
-                restcontriesJsonString = buffer.toString();
+                fixerJsonString = buffer.toString();
 
             }catch (IOException e) {
                 return null;
             }
         }
-        return restcontriesJsonString;
+        return fixerJsonString;
     }
 
-    private String getCurrencyCoinFromJson(String json) throws JSONException {
-        final String JSON_CURRENCIES = "currencies";
-        final String JSON_CODE = "code";
+    private String getResultFromFixerJson(String json, String to) throws JSONException {
+        final String JSON_RATES = "rates";
+        final String JSON_BASE = "base";
+        final String JSON_DATE = "date";
+        final String JSON_DESTINATION = to;
+
         JSONObject jsonObject = new JSONObject(json);
-        JSONArray jsonArray = jsonObject.getJSONArray(JSON_CURRENCIES);
-        String currencyCoin = jsonArray.getJSONObject(0).getString(JSON_CODE);
-        
-//        FetchMoneyTask moneyTask = new FetchMoneyTask();
-//        String value = "";
-//        try {
-//            value = moneyTask.execute(currencyCoin).get();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        }
-        return currencyCoin;
+        JSONObject rates = jsonObject.getJSONObject(JSON_RATES);
+
+        String base = jsonObject.getString(JSON_BASE);
+        double result = rates.getDouble(to);
+
+        Double resultado = round(result) * 100;
+        return resultado.toString();
+    }
+
+    public static double round(double value) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        return Double.valueOf(df.format(value));
     }
 }

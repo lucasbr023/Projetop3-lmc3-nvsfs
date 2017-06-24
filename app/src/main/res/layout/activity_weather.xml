@@ -49,6 +49,29 @@
         android:layout_toEndOf="@+id/temp_atual"
         android:layout_marginStart="12dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="R$100 na cidade selecionada"
+        android:id="@+id/actual_currency_name"
+        android:layout_gravity="right|top"
+        android:layout_below="@+id/temp_atual"
+        android:layout_alignStart="@+id/city_name"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="58dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text=""
+        android:id="@+id/actual_currency"
+        android:layout_gravity="right|top"
+        android:layout_below="@+id/actual_currency_name"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="19dp" />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
