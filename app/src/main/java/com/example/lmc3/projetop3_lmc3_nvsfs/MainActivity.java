@@ -119,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                                  Intent intentBundle = new Intent(MainActivity.this, WeatherActivity.class);
                                                  Bundle bundle = new Bundle();
-                                                 bundle.putDouble("latitude", latitude);
-                                                 bundle.putDouble("longitude", longitude);
+                                                 bundle.putDouble("latitude", marker.getPosition().latitude);
+                                                 bundle.putDouble("longitude", marker.getPosition().longitude);
 
                                                  intentBundle.putExtras(bundle);
                                                  startActivity(intentBundle);

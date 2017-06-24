@@ -113,12 +113,12 @@ public class WeatherActivity extends AppCompatActivity {
             public void run() {
                 getKindOfMoneyByLocation();
             }
-        }, 1000);
+        }, 2000);
         handler.postDelayed(new Runnable() {
             public void run() {
                 getCurrencyByKindOfMoney();
             }
-        }, 1000);
+        }, 2000);
 
         local = (TextView) findViewById(R.id.city_name);
         textTemperature = (TextView) findViewById(R.id.temp_atual);
@@ -237,6 +237,12 @@ public class WeatherActivity extends AppCompatActivity {
                     switch (result[i].weather){
                         case "Clear":
                             imageView.setImageResource(R.drawable.ic_sunny);
+                            break;
+                        case "Clouds":
+                            imageView.setImageResource(R.drawable.cloud);
+                            break;
+                        case "Rain":
+                            imageView.setImageResource(R.drawable.rain);
                             break;
                         default:
                             imageView.setImageResource(R.drawable.cloud);
