@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by lmc3 on 03/06/2017.
@@ -75,16 +74,6 @@ public class FetchCountryTask extends AsyncTask<String, Void, String> {
         JSONObject jsonObject = new JSONObject(json);
         JSONArray jsonArray = jsonObject.getJSONArray(JSON_CURRENCIES);
         String currencyCoin = jsonArray.getJSONObject(0).getString(JSON_CODE);
-        
-//        FetchMoneyTask moneyTask = new FetchMoneyTask();
-//        String value = "";
-//        try {
-//            value = moneyTask.execute(currencyCoin).get();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        }
         return currencyCoin;
     }
 }

@@ -1,13 +1,9 @@
 package com.example.lmc3.projetop3_lmc3_nvsfs;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -18,7 +14,6 @@ import android.view.MenuItem;
 
 import com.example.lmc3.projetop3_lmc3_nvsfs.models.Place;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -27,18 +22,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener {
-
     private GoogleMap map;
-    LocationManager locationManager;
-
     private PlacesHelper placesHelper;
     SupportMapFragment mapa;
-
-
-    public Double name;
+    public String name;
     public Double latitude;
     public Double longitude;
 
@@ -48,12 +39,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
 
         placesHelper = new PlacesHelper(this);
-
-
-
-
-        //Map
-        //MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapa);
 
         mapa = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa);
         mapa.getMapAsync(this);
@@ -86,11 +71,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
 
-        PhoneUnlockedReceiver receiver = new PhoneUnlockedReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_USER_PRESENT);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
-        registerReceiver(receiver, filter);
+//        PhoneUnlockedReceiver receiver = new PhoneUnlockedReceiver();
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction(Intent.ACTION_USER_PRESENT);
+//        filter.addAction(Intent.ACTION_SCREEN_OFF);
+//        registerReceiver(receiver, filter);
     }
 
 
@@ -108,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         for (int i = 0; i< listPlaces.size(); i++){
 
-            map.addMarker(new MarkerOptions().position(new LatLng(listPlaces.get(i).getLatitude(), listPlaces.get(i).getLongitude())).title("teste"));
+            map.addMarker(new MarkerOptions().position(new LatLng(listPlaces.get(i).getLatitude(), listPlaces.get(i).getLongitude())).title(listPlaces.get(i).getNome()));
         }
 
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -121,36 +106,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                  Bundle bundle = new Bundle();
                                                  bundle.putDouble("latitude", marker.getPosition().latitude);
                                                  bundle.putDouble("longitude", marker.getPosition().longitude);
-
                                                  intentBundle.putExtras(bundle);
                                                  startActivity(intentBundle);
-
                                              }
                                          }
         );
 
         map.setOnMapLongClickListener(this);
-
-
-
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         map.setMyLocationEnabled(true);
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-
-        Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-
-        if (location != null) {
-
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(), location.getLongitude()),13));
-
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
-        }
     }
+
 
 
     @Override
@@ -162,9 +131,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         longitude = latLng.longitude;
 
         PlacesHelper placesHelper = new PlacesHelper(getApplicationContext());
-        placesHelper.incluir(latitude, longitude);
+        HighAndLowTask highAndLowTask = new HighAndLowTask();
+        try {
+            com.example.lmc3.projetop3_lmc3_nvsfs.Location[] locations = highAndLowTask.execute(latitude.toString(), longitude.toString()).get();
+            for (int i = 0; i < locations.length; i++){
+                placesHelper.incluir(latitude, longitude, locations[i].city);
+                map.addMarker(new MarkerOptions().position(new LatLng(l1, l2)).title(locations[i].city));
+            }
 
-        map.addMarker(new MarkerOptions().position(new LatLng(l1, l2)).title("teste"));
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }

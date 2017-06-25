@@ -52,11 +52,12 @@ public class PlacesHelper extends SQLiteOpenHelper {
 
     }
 
-    public void incluir(Double latitude, Double longitude) {
+    public void incluir(Double latitude, Double longitude, String nameCity) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUNA_LAT, latitude);
         contentValues.put(COLUNA_LONG, longitude);
+        contentValues.put(COLUNA_NAME, nameCity);
         db.insert(TABELA_PLACES, null, contentValues);
         db.close();
     }
