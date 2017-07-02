@@ -9,10 +9,18 @@
     tools:context="com.example.lmc3.projetop3_lmc3_nvsfs.MainActivity">
 
     <fragment
+        android:id="@+id/place_fragment"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <fragment
         android:id="@+id/mapa"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/place_fragment"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"

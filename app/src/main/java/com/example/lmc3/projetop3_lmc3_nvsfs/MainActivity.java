@@ -9,15 +9,26 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lmc3.projetop3_lmc3_nvsfs.models.Place;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -25,7 +36,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener {
+public class MainActivity extends AppCompatActivity implements PlaceSelectionListener, OnMapReadyCallback, LocationListener, GoogleMap.OnMapLongClickListener {
     private GoogleMap map;
     private PlacesHelper placesHelper;
     SupportMapFragment mapa;
@@ -33,10 +44,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public Double latitude;
     public Double longitude;
 
+    private static final String LOG_TAG = "PlaceSelectionListener";
+    private static final LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(
+            new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Method #1
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_fragment);
+        autocompleteFragment.setOnPlaceSelectedListener((PlaceSelectionListener) this);
+
+
 
         placesHelper = new PlacesHelper(this);
 
@@ -76,6 +102,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        filter.addAction(Intent.ACTION_USER_PRESENT);
 //        filter.addAction(Intent.ACTION_SCREEN_OFF);
 //        registerReceiver(receiver, filter);
+    }
+
+    @Override
+    public void onPlaceSelected(com.google.android.gms.location.places.Place place) {
+        Log.i(LOG_TAG, "Place Selected: " + place.getName());
+        LatLng latLng = place.getLatLng();
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
+    }
+
+    @Override
+    public void onError(Status status) {
+        Log.e(LOG_TAG, "onError: Status = " + status.toString());
+        Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
+                Toast.LENGTH_SHORT).show();
     }
 
 
