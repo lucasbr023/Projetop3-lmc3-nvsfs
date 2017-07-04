@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.Locale;
 
 /**
  * Created by lmc3 on 03/06/2017.
@@ -83,17 +81,17 @@ public class FetchMoneyTask extends AsyncTask<String, Void, String> {
         String base = jsonObject.getString(JSON_BASE);
         double result = rates.getDouble(to);
 
-        Double resultado = round(result) * 100;
+        Double resultado = result * 100;
         return resultado.toString();
     }
 
-    public static double round(double value) {
-        if(Locale.getDefault() == Locale.ENGLISH) {
-            DecimalFormat df = new DecimalFormat("#.##");
-            return Double.valueOf(df.format(value));
-        } else {
-            DecimalFormat df = new DecimalFormat("#,##");
-            return Double.valueOf(df.format(value));
-        }
-    }
+//    public static double round(double value) {
+//        if(Locale.getDefault() == Locale.ENGLISH) {
+//            DecimalFormat df = new DecimalFormat("#.##");
+//            return Double.valueOf(df.format(value));
+//        } else {
+//            DecimalFormat df = new DecimalFormat("#,##");
+//            return Double.valueOf(df.format(value));
+//        }
+//    }
 }

@@ -2,6 +2,7 @@ package com.example.lmc3.projetop3_lmc3_nvsfs;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,12 +11,9 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lmc3.projetop3_lmc3_nvsfs.models.Place;
@@ -97,11 +95,11 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         });
 
 
-//        PhoneUnlockedReceiver receiver = new PhoneUnlockedReceiver();
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction(Intent.ACTION_USER_PRESENT);
-//        filter.addAction(Intent.ACTION_SCREEN_OFF);
-//        registerReceiver(receiver, filter);
+        PhoneUnlockedReceiver receiver = new PhoneUnlockedReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(receiver, filter);
     }
 
     @Override
