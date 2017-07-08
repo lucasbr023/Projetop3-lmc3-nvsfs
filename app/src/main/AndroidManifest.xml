@@ -32,6 +32,7 @@
         </activity>
         <activity android:name=".CurrencyActivity"></activity>
         <activity android:name=".WeatherActivity"></activity>
+        <activity android:name=".PopUpRemoveConfirm" android:theme="@style/AppTheme.CustomTheme"></activity>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

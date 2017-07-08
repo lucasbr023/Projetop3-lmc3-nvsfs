@@ -2,7 +2,6 @@ package com.example.lmc3.projetop3_lmc3_nvsfs;
 
 import java.io.Serializable;
 
-
 public class Location implements Serializable {
 
     public String id;

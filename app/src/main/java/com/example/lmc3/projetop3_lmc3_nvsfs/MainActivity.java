@@ -150,6 +150,16 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
                                          }
         );
 
+        map.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener(){
+            @Override
+            public void onInfoWindowLongClick(Marker marker) {
+                Intent intentBundle = new Intent(MainActivity.this, PopUpRemoveConfirm.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("cityName", marker.getTitle());
+                intentBundle.putExtras(bundle);
+                startActivity(intentBundle);
+            }
+        });
         map.setOnMapLongClickListener(this);
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

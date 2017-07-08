@@ -86,6 +86,13 @@ public class PlacesHelper extends SQLiteOpenHelper {
         return items;
     }
 
+    public void deleteCity(String name)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.delete(TABELA_PLACES, COLUNA_NAME + " = '" + name + "'", null);
+        db.close();
+    }
+
     public void deleteDatabase() {
         mContext.deleteDatabase(DATABASE_NAME);
     }
