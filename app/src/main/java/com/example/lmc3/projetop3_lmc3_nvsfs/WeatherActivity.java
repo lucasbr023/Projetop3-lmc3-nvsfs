@@ -47,7 +47,7 @@ public class WeatherActivity extends AppCompatActivity {
     EditText quantity;
     Button calculate;
     TextView result;
-
+    Button invert;
 
     String country;
     String kindOfMoney;
@@ -58,6 +58,7 @@ public class WeatherActivity extends AppCompatActivity {
     TextView valorMoeda;
     TextView local;
     ImageView imageView;
+
 
     Double latitude = 0.0;
     Double longitude = 0.0;
@@ -72,7 +73,7 @@ public class WeatherActivity extends AppCompatActivity {
         quantity = (EditText) findViewById(R.id.id_quantity);
         calculate = (Button) findViewById(R.id.btn_result);
         result = (TextView) findViewById(R.id.id_result);
-
+        invert =(Button) findViewById(R.id.invert);
 
 
         local = (TextView) findViewById(R.id.city_name);
@@ -103,11 +104,11 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
 
-        ArrayAdapter<String> adapterLocal = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
+        final ArrayAdapter<String> adapterLocal = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
         adapterLocal.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLocal.setAdapter(adapterLocal);
 
-        ArrayAdapter<String> adapterDestination = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
+        final ArrayAdapter<String> adapterDestination = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
         adapterDestination.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDestination.setAdapter(adapterDestination);
 
@@ -130,6 +131,30 @@ public class WeatherActivity extends AppCompatActivity {
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        invert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FetchFixerTask task = new FetchFixerTask();
+
+                String local1 = spinnerLocal.getSelectedItem().toString();
+                String destination1 = spinnerDestination.getSelectedItem().toString();
+                String quantityString = quantity.getText().toString();
+
+                spinnerLocal.setSelection(adapterLocal.getPosition(destination1));
+                spinnerDestination.setSelection(adapterDestination.getPosition(local1));
+
+                try {
+                    Currency currency = task.execute(local1, destination1, quantityString).get();
+                    result.setText(String.valueOf(currency.getResult()));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 

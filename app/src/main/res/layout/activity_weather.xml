@@ -90,18 +90,27 @@
         android:layout_height="wrap_content"
         xmlns:design="http://schemas.android.com/apk/res-auto"
         android:paddingLeft="15dp"
-        android:columnCount="2"
-        android:layout_below="@id/appbar">
+        android:columnCount="3"
+        android:layout_below="@id/appbar"
+        android:layout_alignEnd="@+id/grid2"
+        android:layout_alignParentStart="true">
         <TextView
             android:layout_width="55dp"
             android:layout_height="match_parent"
             android:text="Quantity: "/>
         <EditText
-            android:layout_width="300dp"
+            android:layout_width="208dp"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
             android:id="@+id/id_quantity"
             android:layout_span="2"/>
+
+        <Button
+            android:id="@+id/invert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="invert" />
+        />
     </GridLayout>
 
     <GridLayout
@@ -152,6 +161,7 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="25dp"
+            android:id="@+id/result"
             android:text="Result: "/>
         <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -174,6 +184,7 @@
             android:background="@android:color/white"
             design:menu="@menu/menu_nav" />
     </RelativeLayout>
+
 
 
 
