@@ -14,7 +14,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.concurrent.ExecutionException;
@@ -26,6 +31,23 @@ import static com.example.lmc3.projetop3_lmc3_nvsfs.R.layout.activity_weather;
  */
 
 public class WeatherActivity extends AppCompatActivity {
+
+
+    public final String[] CURRENCY_LIST = {
+            "AUD", "BGN", "BRL", "CAD", "CHF", "CNY",
+            "CZK", "DKK", "EUR", "GBP", "HKD", "HRK",
+            "HUF", "IDR", "ILS", "INR", "JPY", "KRW",
+            "MXN", "MYR", "NOK", "NZD", "PHP", "PLN",
+            "RON", "RUB", "SEK", "SGD", "THB", "TRY",
+            "USD", "ZAR"
+    };
+
+    Spinner spinnerLocal;
+    Spinner spinnerDestination;
+    EditText quantity;
+    Button calculate;
+    TextView result;
+
 
     String country;
     String kindOfMoney;
@@ -45,6 +67,14 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(activity_weather);
 
+        spinnerLocal = (Spinner) findViewById(R.id.id_currencies_local);
+        spinnerDestination = (Spinner) findViewById(R.id.id_currencies_destination);
+        quantity = (EditText) findViewById(R.id.id_quantity);
+        calculate = (Button) findViewById(R.id.btn_result);
+        result = (TextView) findViewById(R.id.id_result);
+
+
+
         local = (TextView) findViewById(R.id.city_name);
         textTemperature = (TextView) findViewById(R.id.temp_atual);
         textMaxTemperature = (TextView) findViewById(R.id.temp_max);
@@ -54,7 +84,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         BottomNavigationView navBar = (BottomNavigationView) findViewById(R.id.navBot);
         Menu menu = navBar.getMenu();
-        MenuItem menuItem = menu.getItem(2);
+        MenuItem menuItem = menu.getItem(1);
         menuItem.setChecked(true);
         navBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -63,11 +93,6 @@ public class WeatherActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.id_weather:
                         return true;
-                    case R.id.id_currency:
-                        Intent intentCurrency = new Intent(WeatherActivity.this, CurrencyActivity.class);
-                        intentCurrency.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(intentCurrency);
-                        return true;
                     case R.id.id_map:
                         Intent intentMap = new Intent(WeatherActivity.this, MainActivity.class);
                         intentMap.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -75,6 +100,36 @@ public class WeatherActivity extends AppCompatActivity {
                         return true;
                 }
                 return true;
+            }
+        });
+
+        ArrayAdapter<String> adapterLocal = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
+        adapterLocal.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLocal.setAdapter(adapterLocal);
+
+        ArrayAdapter<String> adapterDestination = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
+        adapterDestination.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDestination.setAdapter(adapterDestination);
+
+        calculate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                FetchFixerTask task = new FetchFixerTask();
+
+                String local = spinnerLocal.getSelectedItem().toString();
+                String destination = spinnerDestination.getSelectedItem().toString();
+                String quantityString = quantity.getText().toString();
+
+                try {
+                    Currency currency = task.execute(local, destination, quantityString).get();
+                    result.setText(String.valueOf(currency.getResult()));
+                    // String teste = countryTask.execute("JP").get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

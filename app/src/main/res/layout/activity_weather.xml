@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
             android:text="Cidade"
             android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -82,13 +83,82 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </android.support.design.widget.AppBarLayout>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/appbar"
-        android:id="@+id/list_weather">
+    <GridLayout
+        android:id="@+id/grid1"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:design="http://schemas.android.com/apk/res-auto"
+        android:paddingLeft="15dp"
+        android:columnCount="2"
+        android:layout_below="@id/appbar">
+        <TextView
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:text="Quantity: "/>
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:id="@+id/id_quantity"
+            android:layout_span="2"/>
+    </GridLayout>
 
-    </ListView>
+    <GridLayout
+        android:layout_below="@+id/grid1"
+        android:id="@+id/grid2"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:design="http://schemas.android.com/apk/res-auto"
+        android:paddingLeft="16dp"
+        android:columnCount="5">
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:text="From: " />
+        <Spinner
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:id="@+id/id_currencies_local">
+        </Spinner>
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:text="To: "/>
+        <Spinner
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:id="@+id/id_currencies_destination">
+        </Spinner>
+        <Button
+            android:id="@+id/btn_result"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Calcular"/>
+    </GridLayout>
+
+    <GridLayout
+        android:layout_below="@+id/grid2"
+        android:id="@+id/grid3"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:design="http://schemas.android.com/apk/res-auto"
+        android:padding="16dp"
+        android:columnCount="3">
+
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="25dp"
+            android:text="Result: "/>
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/id_result"
+            android:textSize="25dp"
+            android:text=""/>
+    </GridLayout>
 
     <RelativeLayout
         android:id="@+id/relativeLayout"

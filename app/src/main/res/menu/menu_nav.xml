@@ -7,10 +7,6 @@
         android:id="@+id/id_map"/>
 
     <item
-        android:title="Currency"
-        android:icon="@drawable/ic_atm"
-        android:id="@+id/id_currency"/>
-    <item
         android:title="Weather"
         android:icon="@drawable/ic_sunny"
         android:id="@+id/id_weather"/>

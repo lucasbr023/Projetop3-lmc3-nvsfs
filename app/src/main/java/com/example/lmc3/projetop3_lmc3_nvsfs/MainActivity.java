@@ -82,11 +82,6 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
                         intentWeather.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(intentWeather);
                         return true;
-                    case R.id.id_currency:
-                        Intent intentCurrency = new Intent(MainActivity.this, CurrencyActivity.class);
-                        intentCurrency.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(intentCurrency);
-                        return true;
                     case R.id.id_map:
                         return true;
                 }
