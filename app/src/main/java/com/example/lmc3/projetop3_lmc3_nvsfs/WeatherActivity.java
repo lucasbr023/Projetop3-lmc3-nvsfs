@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,12 +76,12 @@ public class WeatherActivity extends AppCompatActivity {
         result = (TextView) findViewById(R.id.id_result);
         invert =(Button) findViewById(R.id.invert);
 
+        quantity.setText("100");
 
         local = (TextView) findViewById(R.id.city_name);
         textTemperature = (TextView) findViewById(R.id.temp_atual);
         textMaxTemperature = (TextView) findViewById(R.id.temp_max);
         textMinTemperature = (TextView) findViewById(R.id.temp_min);
-        valorMoeda = (TextView) findViewById(R.id. actual_currency);
         imageView = (ImageView) findViewById(R.id.imageView);
 
         BottomNavigationView navBar = (BottomNavigationView) findViewById(R.id.navBot);
@@ -104,59 +105,16 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
 
-        final ArrayAdapter<String> adapterLocal = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
-        adapterLocal.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLocal.setAdapter(adapterLocal);
-
-        final ArrayAdapter<String> adapterDestination = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
-        adapterDestination.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDestination.setAdapter(adapterDestination);
 
         calculate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                FetchFixerTask task = new FetchFixerTask();
-
-                String local = spinnerLocal.getSelectedItem().toString();
-                String destination = spinnerDestination.getSelectedItem().toString();
-                String quantityString = quantity.getText().toString();
-
-                try {
-                    Currency currency = task.execute(local, destination, quantityString).get();
-                    result.setText(String.valueOf(currency.getResult()));
-                    // String teste = countryTask.execute("JP").get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                calcularConversao();
             }
         });
 
-        invert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FetchFixerTask task = new FetchFixerTask();
 
-                String local1 = spinnerLocal.getSelectedItem().toString();
-                String destination1 = spinnerDestination.getSelectedItem().toString();
-                String quantityString = quantity.getText().toString();
-
-                spinnerLocal.setSelection(adapterLocal.getPosition(destination1));
-                spinnerDestination.setSelection(adapterDestination.getPosition(local1));
-
-                try {
-                    Currency currency = task.execute(local1, destination1, quantityString).get();
-                    result.setText(String.valueOf(currency.getResult()));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
 
         Intent intent = getIntent();
 
@@ -211,7 +169,34 @@ public class WeatherActivity extends AppCompatActivity {
         }
 
         getKindOfMoneyByLocation();
-        getCurrencyByKindOfMoney();
+        //getCurrencyByKindOfMoney();
+
+
+        final ArrayAdapter<String> adapterLocal = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
+        adapterLocal.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLocal.setAdapter(adapterLocal);
+        spinnerLocal.setSelection(adapterLocal.getPosition("BRL"));
+
+        final ArrayAdapter<String> adapterDestination = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CURRENCY_LIST);
+        adapterDestination.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDestination.setAdapter(adapterDestination);
+        Log.d("TESTE", kindOfMoney);
+        if(!kindOfMoney.isEmpty()){
+            spinnerDestination  .setSelection(adapterDestination.getPosition(kindOfMoney));
+        }
+        calcularConversao();
+
+        invert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String local1 = spinnerLocal.getSelectedItem().toString();
+                String destination1 = spinnerDestination.getSelectedItem().toString();
+
+                spinnerLocal.setSelection(adapterLocal.getPosition(destination1));
+                spinnerDestination.setSelection(adapterDestination.getPosition(local1));
+                calcularConversao();
+            }
+        });
 
     }
 
@@ -227,17 +212,41 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
-    private void getCurrencyByKindOfMoney() {
-        FetchMoneyTask moneyTask = new FetchMoneyTask();
-        String value = "";
+    private void calcularConversao(){
+        FetchFixerTask task = new FetchFixerTask();
+
+        String local = spinnerLocal.getSelectedItem().toString();
+        String destination = spinnerDestination.getSelectedItem().toString();
+        String quantityString = quantity.getText().toString();
+
         try {
-            value = moneyTask.execute(kindOfMoney).get();
-            valorMoeda.setText(value);
+            if(local != destination){
+                Currency currency = task.execute(local, destination, quantityString).get();
+                result.setText(String.valueOf(currency.getResult()));
+            }else{
+                result.setText(quantityString);
+            }
+
+
+            // String teste = countryTask.execute("JP").get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+
     }
+//    private void getCurrencyByKindOfMoney() {
+//        FetchMoneyTask moneyTask = new FetchMoneyTask();
+//        String value = "";
+//        try {
+//            value = moneyTask.execute(kindOfMoney).get();
+//            valorMoeda.setText(value);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
 
